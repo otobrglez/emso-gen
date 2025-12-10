@@ -1,6 +1,6 @@
 # emso-gen
 
-This is `emso-gen` - a tool for generating EMŠO numbers with the helf of SMT solvers.
+This is `emso-gen` - a tool for generating EMŠO numbers with the help of SMT solvers.
 
 This is a research project that demonstrates how SMT solvers can be used for generating random numbers.
 
