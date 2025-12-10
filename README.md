@@ -4,6 +4,10 @@ This is `emso-gen` - a tool for generating EMŠO numbers with the helf of SMT so
 
 This is a research project that demonstrates how SMT solvers can be used for generating random numbers.
 
+## Chart
+
+![EMŠO number](./chart.svg)
+
 ## Author
 
 - Oto Brglez

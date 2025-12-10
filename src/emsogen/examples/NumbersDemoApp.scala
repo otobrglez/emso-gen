@@ -11,10 +11,10 @@ private def currentDate: (Int, Int, Int) =
 def emsoGen(n: Int = 1): Task[List[String]] = Z3Solver.withImplicitContext:
   // Global.setParameter("verbose", "10")
 
-  val ctx: Context = summon[Context]
+  // Variables
+  val digits = (0 until 13).map(i => mkIntConst(s"digit-$i")).toArray
 
-  val digits = (0 until 13).map(i => mkIntConst(s"digit-$i")).toArray[IntExpr]
-
+  // Solver
   val solver = mkSolver()
 
   // All digits must be between 0 and 9
@@ -78,13 +78,10 @@ def emsoGen(n: Int = 1): Task[List[String]] = Z3Solver.withImplicitContext:
   solver.add(isCurrentYear ==> monthNotFuture)
 
   // Control digit formula: if sum % 11 == 0 then 0 else 11 - (sum % 11)
-  val remainder = mkMod(weightedSum, ctx.mkInt(11))
+  val remainder = mkMod(weightedSum, mkInt(11))
   solver.add(remainder !== 1)
 
-  val controlDigit = ctx
-    .mkITE(remainder === 0, mkInt(0), 11 - remainder)
-    .asInstanceOf[ArithExpr[IntSort]]
-
+  val controlDigit = mkITE(remainder === 0, mkInt(0), 11 - remainder)
   solver.add(digits(12) === controlDigit)
 
   // trololo
@@ -93,19 +90,22 @@ def emsoGen(n: Int = 1): Task[List[String]] = Z3Solver.withImplicitContext:
 
   val results = collection.mutable.ListBuffer[String]()
   while results.size < n && solver.check() == Status.SATISFIABLE do
-    val model  = solver.getModel
+    val model = solver.getModel
+    println("Assertions: ")
+    println(solver.getAssertions.foreach(println))
+
     val values = digits.map(d => model.evaluate(d, false).asInstanceOf[IntNum].getInt)
     val emso   = values.mkString
     results += emso
 
     // Block this solution - at least one digit must be different
-    solver.add(ctx.mkOr(digits.zip(values).map((d, v) => d !== v)*))
+    solver.add(mkOr(digits.zip(values).map((d, v) => d !== v)*))
 
   results.toList
 
 object NumbersDemoApp extends ZIOAppDefault:
   def run = for
     _       <- zio.Console.printLine("Generating numbers")
-    numbers <- emsoGen(10)
+    numbers <- emsoGen(1)
     _        = numbers.foreach(println(_))
   yield ()

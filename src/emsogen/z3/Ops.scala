@@ -16,17 +16,19 @@ object Ops:
   def mkBool(v: Boolean)(using ctx: Context): BoolExpr = ctx.mkBool(v)
 
   // Arithmetic
-  def mkAdd(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort] =
+  def mkAdd(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort]             =
     ctx.mkAdd(args.asInstanceOf[Seq[Expr[? <: ArithSort]]]*)
-  def mkMul(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort] =
+  def mkMul(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort]             =
     ctx.mkMul(args.asInstanceOf[Seq[Expr[? <: ArithSort]]]*)
-  def mkSub(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort] =
+  def mkSub(args: ArithExpr[? <: ArithSort]*)(using ctx: Context): ArithExpr[? <: ArithSort]             =
     ctx.mkSub(args.asInstanceOf[Seq[Expr[? <: ArithSort]]]*)
-  def mkMod(left: ArithExpr[?], right: ArithExpr[?])(using ctx: Context): IntExpr            =
+  def mkMod(left: ArithExpr[?], right: ArithExpr[?])(using ctx: Context): IntExpr                        =
     ctx.mkMod(left.asInstanceOf[IntExpr], right.asInstanceOf[IntExpr])
-  def mkSum(args: ArithExpr[?]*)(using ctx: Context): IntExpr                                =
+  def mkSum(args: ArithExpr[?]*)(using ctx: Context): IntExpr                                            =
     ctx.mkAdd(args.asInstanceOf[Seq[Expr[? <: ArithSort]]]*).asInstanceOf[IntExpr]
-
+  def mkITE(cond: BoolExpr, thenExpr: ArithExpr[?], elseExpr: ArithExpr[?])(using ctx: Context): IntExpr =
+    ctx.mkITE(cond, thenExpr, elseExpr).asInstanceOf[IntExpr]
+  
   // Comparisons
   def mkEq(left: Expr[?], right: Expr[?])(using ctx: Context): BoolExpr           = ctx.mkEq(left, right)
   def mkGt(left: ArithExpr[?], right: ArithExpr[?])(using ctx: Context): BoolExpr = ctx.mkGt(left, right)
